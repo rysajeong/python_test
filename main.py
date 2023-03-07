@@ -1,11 +1,10 @@
 import pymssql
-from datetime import datetime
 
 from flask import Flask, request
 from config import *
 
 
-conn = pymssql.connect(server=sql['server'],
+conn = pymssql.connect(host=sql['host'],
 					   user=sql['user'],
 					   password=sql['password'],
 					   database=sql['database'])
@@ -15,7 +14,6 @@ cursor = conn.cursor()
 app = Flask(__name__)
 
 
-# 유저 목록
 @app.route('/')
 def userList():
 	cursor.execute(f'{select_sql} where status={STATUS_ACTIVE};')
@@ -36,7 +34,6 @@ def userList():
 	}
 	return result
 
-# 유저 조회
 @app.route('/<int:user_id>')
 def userInfo(user_id):
 	cursor.execute(f"{select_sql} where id='{user_id}' and status>={STATUS_INACTIVE};")
@@ -66,7 +63,6 @@ def userInfo(user_id):
 	}
 	return result
 
-# 유저 삭제
 @app.route('/<int:user_id>', methods=['DELETE'])
 def userDelete(user_id):
 	cursor.execute(f"{select_sql} where id='{user_id}' and status>={STATUS_ACTIVE};")
@@ -76,6 +72,7 @@ def userDelete(user_id):
 		sql = f"""UPDATE {table_name} SET status={STATUS_DELETE} WHERE id='{user_id}';"""
 		cursor.execute(sql)
 		conn.commit()
+		conn.close()
 
 		result_code = RESULT_CODE['SUCCESS'][0]
 		result_msg = RESULT_CODE['SUCCESS'][1]
@@ -89,7 +86,6 @@ def userDelete(user_id):
 	}
 	return result
 
-# 유저 가입
 @app.route('/', methods=['POST'])
 def signUp():
 	data = request.get_json()
@@ -133,7 +129,6 @@ def signUp():
 	}
 	return result
 
-# 유저 수정
 @app.route('/<int:user_id>', methods=['PUT'])
 def userUpdate(user_id):
 	data = request.get_json()
@@ -189,4 +184,4 @@ def userUpdate(user_id):
 
 
 if __name__ == '__main__':
-	app.run()
+	app.run(host='0.0.0.0', debug=True)
