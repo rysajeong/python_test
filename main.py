@@ -1,13 +1,15 @@
 import pymssql
+import pyodbc
 
 from flask import Flask, request
 from config import *
 
 
-conn = pymssql.connect(host=sql['host'],
-					   user=sql['user'],
-					   password=sql['password'],
-					   database=sql['database'])
+# conn = pymssql.connect(host=sql['host'],
+# 					   user=sql['user'],
+# 					   password=sql['password'],
+# 					   database=sql['database'])
+conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+ sql['host'] +';DATABASE='+ sql['database'] +';UID='+ sql['user'] +';PWD='+ sql['password']+';Trusted_Connection=no;')
 cursor = conn.cursor()
 
 
