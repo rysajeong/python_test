@@ -25,7 +25,7 @@ def userList():
 	# cursor.execute(f'{select_sql} where status={STATUS_ACTIVE};')
 	# users = cursor.fetchall()
 
-	users = User.query.all()
+	users = User.query.filter(User.status >= STATUS_INACTIVE)
 	result_data = []
 	for user in users:
 		# result_data.append({'id': user[0],
@@ -57,7 +57,8 @@ def userInfo(user_id):
 	# cursor.execute(f"{select_sql} where id='{user_id}' and status>={STATUS_INACTIVE};")
 	# user = cursor.fetchone()
 
-	user = User.query.filter(User.id == user_id).first()
+	user = User.query.filter(User.id == user_id,
+							 User.status >= STATUS_INACTIVE).first()
 	if user is not None:
 		# result_data = {
 		# 	'id': user[0],
